@@ -1289,14 +1289,16 @@ $tanggal_diagnosa = date('d F Y, H:i');
                                     <span class="calc-step-title"><?php echo htmlspecialchars($nama_gejala); ?></span>
                                 </div>
                                 <div class="calc-formula">
-                                    CF Kombinasi = CF Lama + (CF Baru × (1 - CF Lama))<br>
-                                    CF Kombinasi = <?php echo number_format($cf_old, 4); ?> + (<?php echo number_format($cf_new, 4); ?> × (1 - <?php echo number_format($cf_old, 4); ?>))<br>
-                                    CF Kombinasi = <?php echo number_format($cf_old, 4); ?> + (<?php echo number_format($cf_new, 4); ?> × <?php echo number_format(1 - $cf_old, 4); ?>)<br>
-                                    CF Kombinasi = <?php echo number_format($cf_old, 4); ?> + <?php echo number_format($cf_new * (1 - $cf_old), 4); ?>
+                                    <strong>CF<sub>combine</sub> = CF<sub>old</sub> + CF<sub>gejala</sub> × (1 - CF<sub>old</sub>)</strong><br><br>
+                                    <strong>CF<sub>combine <?php echo $counter; ?></sub> = CF<sub>old <?php echo $counter - 1; ?></sub> + CF<sub>gejala <?php echo $counter; ?></sub> × (1 - CF<sub>old <?php echo $counter - 1; ?></sub>)</strong><br>
+                                    = <?php echo number_format($cf_old, 4); ?> + <?php echo number_format($cf_new, 4); ?> × (1 - <?php echo number_format($cf_old, 4); ?>)<br>
+                                    = <?php echo number_format($cf_old, 4); ?> + <?php echo number_format($cf_new, 4); ?> × <?php echo number_format(1 - $cf_old, 4); ?><br>
+                                    = <?php echo number_format($cf_old, 4); ?> + <?php echo number_format($cf_new * (1 - $cf_old), 4); ?><br><br>
+                                    <strong style="color: var(--primary);">CF<sub>old <?php echo $counter; ?></sub> = <?php echo number_format($cf_combine, 4); ?></strong>
                                 </div>
-                                <div class="calc-result">
-                                    <i class="fas fa-arrow-right me-2"></i>Hasil: <?php echo number_format($cf_combine, 4); ?> (<?php echo number_format($cf_combine * 100, 2); ?>%)
-                                </div>
+                                        <div class="calc-result">
+                                            <i class="fas fa-arrow-right me-2"></i>Hasil: <?php echo number_format($cf_combine, 4); ?> (<?php echo number_format($cf_combine * 100, 2); ?>%)
+                                        </div>
                             </div>
                         <?php
                             }
