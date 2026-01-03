@@ -37,19 +37,45 @@ $hasil_diagnosa = [];
 foreach ($diagnosa as $penyakit => $cf_values) {
     $cf_combine = 0;
     $cf_process = [];
+    
+    // Hitung jumlah gejala yang dipilih user
+    $matched_count = 0;
+    $total_rules = count($cf_values);
+    
     foreach ($cf_values as $id_gejala => $cf_data) {
+        if ($cf_data['nilai_user'] > 0) {
+            $matched_count++;
+        }
         $cf_new = $cf_data['cf'];
         $cf_combine = $cf_combine + ($cf_new * (1 - $cf_combine));
         $cf_process[] = "CF Baru = {$cf_combine} + ({$cf_new} * (1 - {$cf_combine}))";
     }
+    
+    // Hitung coverage (proporsi gejala terpenuhi)
+    $coverage = $total_rules > 0 ? $matched_count / $total_rules : 0;
+    
+    // CF akhir = CF combine × coverage
+    $cf_final = $cf_combine * $coverage;
+    
     $hasil_diagnosa[$penyakit] = [
-        'cf' => $cf_combine,
+        'cf' => $cf_final,
+        'cf_combine' => $cf_combine,
+        'coverage' => $coverage,
+        'matched_count' => $matched_count,
+        'total_rules' => $total_rules,
         'gejala' => $cf_values,
         'proses' => $cf_process
     ];
 }
 
-arsort($hasil_diagnosa);
+uasort($hasil_diagnosa, function($a, $b) {
+    // Prioritas 1: CF akhir tertinggi
+    if (abs($b['cf'] - $a['cf']) > 0.0001) {
+        return ($b['cf'] > $a['cf']) ? 1 : -1;
+    }
+    // Prioritas 2: Coverage tertinggi
+    return ($b['coverage'] > $a['coverage']) ? 1 : -1;
+});
 
 $daftar_penyakit = [];
 $penyakit_tertinggi = null;
@@ -1306,9 +1332,22 @@ $tanggal_diagnosa = date('d F Y, H:i');
                         ?>
                     </div>
 
+                    <?php
+                    $matched = 0;
+                    $total = count($penyakit_tertinggi['gejala']);
+                    foreach ($penyakit_tertinggi['gejala'] as $g) {
+                        if ($g['nilai_user'] > 0) $matched++;
+                    }
+                    $coverage = $total > 0 ? $matched / $total : 0;
+                    $cf_akhir = $cf_combine * $coverage;
+                    ?>
                     <div class="final-result">
-                        <h4>Hasil Akhir CF Kombinasi</h4>
-                        <div class="value"><?php echo number_format($cf_combine * 100, 5); ?>%</div>
+                        <h4>Hasil Akhir CF</h4>
+                        <div class="value"><?php echo number_format($cf_akhir * 100, 5); ?>%</div>
+                        <small style="opacity: 0.8; display: block; margin-top: 0.5rem;">
+                            CF Combine: <?php echo number_format($cf_combine * 100, 2); ?>% × 
+                            Coverage: <?php echo $matched; ?>/<?php echo $total; ?> (<?php echo number_format($coverage * 100, 0); ?>%)
+                        </small>
                     </div>
                 </div>
             </div>
