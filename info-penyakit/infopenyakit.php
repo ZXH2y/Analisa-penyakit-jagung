@@ -122,7 +122,7 @@ $total_penyakit = count($hasil);
                     <div class="disease-card-header">
                         <div class="disease-code">
                             <i class="fas fa-tag"></i>
-                            <?php echo $data_penyakit['id_penyakit']; ?>
+                            <?php echo $data_penyakit['nama_penyakit']; ?>
                         </div>
                         <h3 class="disease-name"><?php echo $data_penyakit['nama_penyakit']; ?></h3>
                     </div>

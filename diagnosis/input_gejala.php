@@ -211,3 +211,14 @@ $total_gejala = mysqli_num_rows($result);
     </script>
 </body>
 </html>
+
+
+<!-- 
+
+sedikit yakin
+yakin
+tidak tahu
+tidak
+sangat yakin
+cukup yakin 
+-->

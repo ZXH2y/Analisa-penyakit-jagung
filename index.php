@@ -1,5 +1,5 @@
 <?php 
-include('conncection.php');
+include('connection.php');
 ?>
 
 <!DOCTYPE html>
@@ -9,90 +9,112 @@ include('conncection.php');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diagnosa Jagung - Sistem Pakar Penyakit Tanaman Jagung</title>
     
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
-    
-    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            /* Organic Nature Palette */
-            --forest-50: #f0f7f4;
-            --forest-100: #dceee5;
-            --forest-200: #bce0cf;
-            --forest-300: #8cc9ad;
-            --forest-400: #5aab86;
-            --forest-500: #3a9068;
-            --forest-600: #2a7453;
-            --forest-700: #235d44;
-            --forest-800: #1f4a38;
-            --forest-900: #1b3d2f;
-            --forest-950: #0d221a;
+            --hijau-50: #f0fdf4;
+            --hijau-100: #dcfce7;
+            --hijau-200: #bbf7d0;
+            --hijau-300: #86efac;
+            --hijau-400: #4ade80;
+            --hijau-500: #22c55e;
+            --hijau-600: #16a34a;
+            --hijau-700: #15803d;
+            --hijau-800: #166534;
+            --hijau-900: #14532d;
             
-            --corn-50: #fffbeb;
-            --corn-100: #fef3c7;
-            --corn-200: #fde68a;
-            --corn-300: #fcd34d;
-            --corn-400: #fbbf24;
-            --corn-500: #f59e0b;
-            --corn-600: #d97706;
-            --corn-700: #b45309;
+            --kuning-400: #facc15;
+            --kuning-500: #eab308;
             
-            --cream-50: #fdfcf9;
-            --cream-100: #faf7f0;
-            --cream-200: #f3ede0;
-            --cream-800: #4a4637;
-            --cream-900: #2d2a20;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-bg-strong: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             
-            /* Semantic */
-            --background: #fdfcf9;
-            --foreground: #1b3d2f;
-            --card-bg: #ffffff;
-            --muted: #6b7c74;
-            
-            /* Radius */
             --radius-sm: 8px;
             --radius-md: 16px;
             --radius-lg: 24px;
             --radius-xl: 32px;
-            --radius-2xl: 48px;
             --radius-full: 9999px;
-            
-            /* Shadows */
-            --shadow-soft: 0 4px 24px -4px rgba(27, 61, 47, 0.08);
-            --shadow-medium: 0 8px 32px -8px rgba(27, 61, 47, 0.12);
-            --shadow-strong: 0 24px 64px -16px rgba(27, 61, 47, 0.2);
-            --shadow-glow: 0 0 80px -20px rgba(58, 144, 104, 0.4);
         }
 
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'DM Sans', sans-serif;
-            background-color: var(--background);
-            color: var(--foreground);
+            color: white;
             line-height: 1.6;
             overflow-x: hidden;
+            background: #0a0a0a;
         }
 
-        .font-serif {
-            font-family: 'Playfair Display', Georgia, serif;
+        .font-serif { font-family: 'Playfair Display', Georgia, serif; }
+
+        /* ==================== VIDEO BACKGROUND ==================== */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
         }
 
-        h1, h2, h3, h4, h5, h6 {
-            font-weight: 700;
-            line-height: 1.1;
+        .video-background video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(
+                180deg,
+                rgba(0, 20, 10, 0.7) 0%,
+                rgba(0, 30, 15, 0.6) 30%,
+                rgba(0, 25, 12, 0.7) 70%,
+                rgba(0, 15, 8, 0.85) 100%
+            );
+        }
+
+        /* Efek partikel hijau */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--hijau-400);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: particleFloat 20s infinite linear;
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
         }
 
         .container {
@@ -102,37 +124,22 @@ include('conncection.php');
             padding: 0 2rem;
         }
 
-        /* Grain Texture Overlay */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.025;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
-
-        /* ==================== NAVBAR ==================== */
+        /* ==================== GLASSMORPHISM NAVBAR ==================== */
         .navbar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             z-index: 1000;
-            padding: 1.25rem 0;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 1rem 0;
+            transition: all 0.4s ease;
         }
 
         .navbar.scrolled {
-            background: rgba(253, 252, 249, 0.85);
+            background: rgba(0, 20, 10, 0.8);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 1px 0 rgba(27, 61, 47, 0.08);
-            padding: 0.875rem 0;
+            border-bottom: 1px solid var(--glass-border);
         }
 
         .navbar-inner {
@@ -144,40 +151,34 @@ include('conncection.php');
         .navbar-brand {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             text-decoration: none;
             color: white;
             font-weight: 700;
             font-size: 1.25rem;
-            transition: color 0.3s;
-        }
-
-        .navbar.scrolled .navbar-brand {
-            color: var(--foreground);
         }
 
         .navbar-brand-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(145deg, var(--corn-400) 0%, var(--corn-500) 100%);
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(145deg, var(--hijau-500), var(--hijau-600));
             border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.375rem;
-            color: var(--forest-950);
-            box-shadow: 0 4px 12px -2px rgba(251, 191, 36, 0.4);
-            transition: transform 0.3s ease;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+            transition: transform 0.3s;
         }
 
         .navbar-brand:hover .navbar-brand-icon {
-            transform: rotate(-8deg) scale(1.05);
+            transform: rotate(-10deg) scale(1.05);
         }
 
         .navbar-menu {
             display: flex;
             align-items: center;
-            gap: 0.375rem;
+            gap: 0.5rem;
             list-style: none;
         }
 
@@ -185,228 +186,113 @@ include('conncection.php');
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 0.75rem 1.375rem;
+            padding: 0.75rem 1.25rem;
             text-decoration: none;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.85);
             font-weight: 500;
-            font-size: 0.925rem;
+            font-size: 0.9rem;
             border-radius: var(--radius-full);
             transition: all 0.3s;
-            position: relative;
+            border: 1px solid transparent;
         }
 
-        .navbar.scrolled .navbar-link {
-            color: var(--foreground);
-        }
-
-        .navbar-link::after {
-            content: '';
-            position: absolute;
-            bottom: 6px;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: currentColor;
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-            border-radius: 2px;
-        }
-
-        .navbar-link:hover::after {
-            width: calc(100% - 2.75rem);
+        .navbar-link:hover {
+            background: var(--glass-bg);
+            border-color: var(--glass-border);
+            color: white;
         }
 
         .navbar-cta {
-            background: white;
-            color: var(--forest-700) !important;
+            background: linear-gradient(145deg, var(--hijau-500), var(--hijau-600)) !important;
+            color: white !important;
             font-weight: 600;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .navbar-cta::after {
-            display: none;
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
         }
 
         .navbar-cta:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .navbar.scrolled .navbar-cta {
-            background: linear-gradient(145deg, var(--forest-600) 0%, var(--forest-700) 100%);
-            color: white !important;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
         }
 
         .mobile-toggle {
             display: none;
-            background: none;
-            border: none;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             cursor: pointer;
-            padding: 0.5rem;
-        }
-
-        .navbar.scrolled .mobile-toggle {
-            color: var(--foreground);
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
         }
 
         /* ==================== HERO SECTION ==================== */
         .hero {
             min-height: 100vh;
-            position: relative;
             display: flex;
             align-items: center;
-            overflow: hidden;
-            background: linear-gradient(165deg, var(--forest-800) 0%, var(--forest-900) 40%, var(--forest-950) 100%);
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: 
-                radial-gradient(ellipse 100% 70% at 10% 30%, rgba(58, 144, 104, 0.2) 0%, transparent 50%),
-                radial-gradient(ellipse 70% 50% at 90% 70%, rgba(251, 191, 36, 0.12) 0%, transparent 50%),
-                radial-gradient(ellipse 50% 50% at 50% 50%, rgba(58, 144, 104, 0.08) 0%, transparent 60%);
-        }
-
-        /* Organic pattern */
-        .hero-pattern {
-            position: absolute;
-            inset: 0;
-            opacity: 0.04;
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 10C50 10 40 30 40 50C40 70 50 90 50 90C50 90 60 70 60 50C60 30 50 10 50 10Z' fill='%23ffffff' fill-opacity='0.6'/%3E%3Ccircle cx='25' cy='25' r='3' fill='%23ffffff' fill-opacity='0.3'/%3E%3Ccircle cx='75' cy='75' r='3' fill='%23ffffff' fill-opacity='0.3'/%3E%3C/svg%3E");
-            background-size: 100px 100px;
-        }
-
-        /* Floating organic shapes */
-        .floating-shape {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            animation: organicFloat 25s ease-in-out infinite;
-        }
-
-        .floating-shape-1 {
-            width: 500px;
-            height: 500px;
-            background: rgba(58, 144, 104, 0.25);
-            top: -15%;
-            right: -10%;
-            animation-delay: 0s;
-        }
-
-        .floating-shape-2 {
-            width: 400px;
-            height: 400px;
-            background: rgba(251, 191, 36, 0.15);
-            bottom: 5%;
-            left: -10%;
-            animation-delay: -12s;
-        }
-
-        .floating-shape-3 {
-            width: 300px;
-            height: 300px;
-            background: rgba(90, 171, 134, 0.2);
-            top: 50%;
-            left: 30%;
-            animation-delay: -6s;
-        }
-
-        @keyframes organicFloat {
-            0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            25% { transform: translate(40px, -30px) scale(1.08) rotate(5deg); }
-            50% { transform: translate(-20px, 40px) scale(0.95) rotate(-5deg); }
-            75% { transform: translate(30px, 20px) scale(1.03) rotate(3deg); }
+            position: relative;
+            padding: 8rem 0 4rem;
         }
 
         .hero-content {
-            position: relative;
-            z-index: 2;
-            padding: 10rem 0 6rem;
             width: 100%;
-        }
-
-        .hero-text-center {
             text-align: center;
             max-width: 900px;
-            margin: 0 auto 4rem;
+            margin: 0 auto;
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            gap: 10px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             backdrop-filter: blur(10px);
             padding: 0.75rem 1.5rem;
             border-radius: var(--radius-full);
             font-size: 0.9rem;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--hijau-300);
             margin-bottom: 2rem;
-            animation: fadeInUp 0.8s ease-out;
+            animation: fadeInUp 0.8s ease;
         }
 
-        .hero-badge i {
-            color: var(--corn-400);
-        }
+        .hero-badge i { color: var(--hijau-400); }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .hero-title {
-            font-size: clamp(2.75rem, 6vw, 5rem);
-            color: white;
-            margin-bottom: 1.75rem;
-            letter-spacing: -0.03em;
-            animation: fadeInUp 0.8s ease-out 0.1s both;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            animation: fadeInUp 0.8s ease 0.1s both;
         }
 
         .hero-title .highlight {
-            position: relative;
-            display: inline-block;
-            color: var(--corn-400);
-        }
-
-        .hero-title .highlight::after {
-            content: '';
-            position: absolute;
-            bottom: 0.05em;
-            left: -0.05em;
-            right: -0.05em;
-            height: 0.35em;
-            background: linear-gradient(90deg, var(--corn-400), var(--corn-500));
-            opacity: 0.25;
-            border-radius: 4px;
-            z-index: -1;
-            transform: skewX(-3deg);
+            background: linear-gradient(135deg, var(--hijau-400), var(--hijau-300));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .hero-title .serif-italic {
-            font-family: 'Playfair Display', Georgia, serif;
+            font-family: 'Playfair Display', serif;
             font-style: italic;
             font-weight: 500;
         }
 
         .hero-description {
-            font-size: 1.25rem;
-            color: rgba(255, 255, 255, 0.75);
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
             max-width: 600px;
             margin: 0 auto 2.5rem;
             line-height: 1.8;
-            animation: fadeInUp 0.8s ease-out 0.2s both;
+            animation: fadeInUp 0.8s ease 0.2s both;
         }
 
         .hero-buttons {
@@ -414,7 +300,7 @@ include('conncection.php');
             flex-wrap: wrap;
             gap: 1rem;
             justify-content: center;
-            animation: fadeInUp 0.8s ease-out 0.3s both;
+            animation: fadeInUp 0.8s ease 0.3s both;
         }
 
         .btn {
@@ -422,7 +308,7 @@ include('conncection.php');
             align-items: center;
             justify-content: center;
             gap: 10px;
-            padding: 1.125rem 2.25rem;
+            padding: 1rem 2rem;
             font-family: inherit;
             font-size: 1rem;
             font-weight: 600;
@@ -434,331 +320,124 @@ include('conncection.php');
         }
 
         .btn-primary {
-            background: linear-gradient(145deg, var(--corn-400) 0%, var(--corn-500) 100%);
-            color: var(--forest-950);
-            box-shadow: 0 8px 32px -8px rgba(251, 191, 36, 0.5);
+            background: linear-gradient(145deg, var(--hijau-500), var(--hijau-600));
+            color: white;
+            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.4);
         }
 
         .btn-primary:hover {
             transform: translateY(-4px);
-            box-shadow: 0 16px 48px -8px rgba(251, 191, 36, 0.6);
+            box-shadow: 0 12px 40px rgba(34, 197, 94, 0.5);
         }
 
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .btn-glass {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             color: white;
             backdrop-filter: blur(10px);
         }
 
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
+        .btn-glass:hover {
+            background: var(--glass-bg-strong);
             transform: translateY(-4px);
         }
 
-        /* ==================== CONTAINER SCROLL SECTION ==================== */
-        .scroll-section {
-            padding: 0;
-            position: relative;
-        }
-
-        .scroll-container {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            padding: 6rem 2rem;
-        }
-
-        .scroll-container.light-bg {
-            background: var(--background);
-        }
-
-        .scroll-container.dark-bg {
-            background: linear-gradient(180deg, var(--forest-900) 0%, var(--forest-950) 100%);
-        }
-
-        .scroll-title-wrapper {
-            text-align: center;
-            margin-bottom: 3rem;
-            max-width: 800px;
-            z-index: 10;
-            will-change: transform;
-            transition: transform 0.1s linear;
-        }
-
-        .scroll-title {
-            font-size: clamp(1.5rem, 3vw, 2rem);
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-
-        .scroll-container.light-bg .scroll-title {
-            color: var(--foreground);
-        }
-
-        .scroll-container.dark-bg .scroll-title {
-            color: white;
-        }
-
-        .scroll-title-large {
-            font-size: clamp(2.5rem, 5vw, 4.5rem);
-            font-weight: 700;
-            line-height: 1.05;
-            letter-spacing: -0.03em;
-        }
-
-        .scroll-container.light-bg .scroll-title-large {
-            background: linear-gradient(145deg, var(--forest-700) 0%, var(--forest-600) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .scroll-container.dark-bg .scroll-title-large {
-            color: white;
-        }
-
-        .scroll-card-wrapper {
-            width: 100%;
-            max-width: 1000px;
-            position: relative;
-            transform-style: preserve-3d;
-            will-change: transform;
-            transition: transform 0.1s linear;
-            transform: perspective(1000px) rotateX(15deg) scale(0.9);
-        }
-
-        .scroll-container.in-view .scroll-card-wrapper {
-            transform: perspective(1000px) rotateX(0deg) scale(1);
-        }
-
-        .scroll-card {
-            background: linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 100%);
-            border-radius: var(--radius-xl);
-            padding: 0.75rem;
-            box-shadow: var(--shadow-strong), 0 0 0 1px rgba(255, 255, 255, 0.1);
-            overflow: hidden;
-        }
-
-        .scroll-card-inner {
-            border-radius: calc(var(--radius-xl) - 0.5rem);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .scroll-card-image {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            object-fit: cover;
-            object-position: left top;
-            display: block;
-            transition: transform 0.6s ease;
-        }
-
-        .scroll-card:hover .scroll-card-image {
-            transform: scale(1.03);
-        }
-
-        /* Floating cards around scroll container */
-        .scroll-float-card {
-            position: absolute;
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 1.25rem 1.5rem;
-            box-shadow: var(--shadow-strong);
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            z-index: 20;
-            opacity: 0;
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .scroll-container.in-view .scroll-float-card {
-            opacity: 1;
-        }
-
-        .scroll-float-card-1 {
-            top: 20%;
-            left: 5%;
-            transform: translateX(-30px);
-            transition-delay: 0.4s;
-        }
-
-        .scroll-float-card-2 {
-            bottom: 25%;
-            right: 5%;
-            transform: translateX(30px);
-            transition-delay: 0.5s;
-        }
-
-        .scroll-container.in-view .scroll-float-card-1 {
-            transform: translateX(0);
-            animation: floatCard 5s ease-in-out infinite 0.6s;
-        }
-
-        .scroll-container.in-view .scroll-float-card-2 {
-            transform: translateX(0);
-            animation: floatCard 5s ease-in-out infinite 0.8s;
-        }
-
-        @keyframes floatCard {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        .float-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.375rem;
-        }
-
-        .float-icon.green {
-            background: var(--forest-100);
-            color: var(--forest-600);
-        }
-
-        .float-icon.gold {
-            background: var(--corn-100);
-            color: var(--corn-600);
-        }
-
-        .float-text h6 {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--foreground);
-            margin-bottom: 3px;
-        }
-
-        .float-text p {
-            font-size: 0.8rem;
-            color: var(--muted);
-        }
-
-        /* ==================== STATS SECTION ==================== */
-        .stats-section {
+        /* ==================== GLASS CARD SECTIONS ==================== */
+        .section {
             padding: 6rem 0;
-            background: linear-gradient(180deg, var(--forest-950) 0%, var(--forest-900) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stats-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(ellipse 60% 50% at 50% 100%, rgba(58, 144, 104, 0.15) 0%, transparent 70%);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 3rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .stat-item {
-            text-align: center;
-            position: relative;
-            padding: 2rem;
-        }
-
-        .stat-item::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            height: 60px;
-            width: 1px;
-            background: linear-gradient(180deg, transparent, rgba(255,255,255,0.2), transparent);
-        }
-
-        .stat-item:last-child::after {
-            display: none;
-        }
-
-        .stat-number {
-            font-size: 4rem;
-            font-weight: 800;
-            font-family: 'Playfair Display', Georgia, serif;
-            background: linear-gradient(145deg, var(--corn-400) 0%, var(--corn-300) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
-            margin-bottom: 0.75rem;
-        }
-
-        .stat-label {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.7);
-            font-weight: 500;
-        }
-
-        /* ==================== FEATURES SECTION ==================== */
-        .features-section {
-            padding: 8rem 0;
-            background: var(--background);
             position: relative;
         }
 
         .section-header {
             text-align: center;
             max-width: 700px;
-            margin: 0 auto 5rem;
+            margin: 0 auto 4rem;
         }
 
         .section-badge {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            background: var(--forest-100);
-            padding: 0.625rem 1.5rem;
+            gap: 8px;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 0.5rem 1.25rem;
             border-radius: var(--radius-full);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
-            color: var(--forest-700);
-            margin-bottom: 1.5rem;
+            color: var(--hijau-400);
+            margin-bottom: 1.25rem;
         }
 
         .section-title {
             font-size: clamp(2rem, 4vw, 3rem);
-            color: var(--foreground);
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
             letter-spacing: -0.02em;
         }
 
         .section-description {
-            color: var(--muted);
-            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
             line-height: 1.8;
         }
 
+        /* ==================== GLASS STATS ==================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            background: var(--glass-bg-strong);
+            border-color: rgba(34, 197, 94, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(34, 197, 94, 0.1);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(135deg, var(--hijau-400), var(--hijau-300));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* ==================== GLASS FEATURES ==================== */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 2.5rem;
+            gap: 2rem;
         }
 
         .feature-card {
-            background: white;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: var(--radius-xl);
-            padding: 3rem;
-            border: 1px solid rgba(27, 61, 47, 0.08);
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 2.5rem;
+            transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
         }
@@ -769,17 +448,18 @@ include('conncection.php');
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--forest-500), var(--forest-400));
+            height: 3px;
+            background: linear-gradient(90deg, var(--hijau-500), var(--hijau-400));
             transform: scaleX(0);
             transform-origin: left;
-            transition: transform 0.5s ease;
+            transition: transform 0.4s ease;
         }
 
         .feature-card:hover {
-            transform: translateY(-12px);
-            box-shadow: var(--shadow-strong);
-            border-color: transparent;
+            transform: translateY(-10px);
+            background: var(--glass-bg-strong);
+            border-color: rgba(34, 197, 94, 0.3);
+            box-shadow: var(--glass-shadow), 0 0 40px rgba(34, 197, 94, 0.1);
         }
 
         .feature-card:hover::before {
@@ -787,14 +467,14 @@ include('conncection.php');
         }
 
         .feature-icon {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             border-radius: var(--radius-lg);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            margin-bottom: 2rem;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
             transition: transform 0.4s ease;
         }
 
@@ -802,79 +482,83 @@ include('conncection.php');
             transform: scale(1.1) rotate(-5deg);
         }
 
-        .feature-icon.style-1 {
-            background: linear-gradient(145deg, var(--forest-100) 0%, var(--forest-200) 100%);
-            color: var(--forest-600);
+        .feature-icon.hijau {
+            background: linear-gradient(145deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
+            color: var(--hijau-400);
+            border: 1px solid rgba(34, 197, 94, 0.3);
         }
 
-        .feature-icon.style-2 {
-            background: linear-gradient(145deg, var(--corn-100) 0%, var(--corn-200) 100%);
-            color: var(--corn-600);
+        .feature-icon.kuning {
+            background: linear-gradient(145deg, rgba(250, 204, 21, 0.2), rgba(250, 204, 21, 0.1));
+            color: var(--kuning-400);
+            border: 1px solid rgba(250, 204, 21, 0.3);
         }
 
-        .feature-icon.style-3 {
-            background: linear-gradient(145deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.2) 100%);
-            color: #6366f1;
+        .feature-icon.biru {
+            background: linear-gradient(145deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.1));
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.3);
         }
 
         .feature-card h4 {
-            font-size: 1.375rem;
+            font-size: 1.25rem;
             font-weight: 700;
-            color: var(--foreground);
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         .feature-card p {
-            color: var(--muted);
-            font-size: 1rem;
-            line-height: 1.75;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.95rem;
+            line-height: 1.7;
         }
 
-        /* ==================== HOW IT WORKS ==================== */
-        .how-section {
-            padding: 8rem 0;
-            background: white;
-        }
-
-        .how-grid {
+        /* ==================== GLASS STEPS ==================== */
+        .steps-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 2.5rem;
+            gap: 2rem;
             position: relative;
         }
 
-        .how-grid::before {
+        .steps-grid::before {
             content: '';
             position: absolute;
-            top: 60px;
-            left: 12%;
-            right: 12%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--forest-300), var(--corn-300), var(--forest-300));
-            border-radius: 2px;
-            z-index: 0;
+            top: 55px;
+            left: 15%;
+            right: 15%;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--hijau-500), 
+                var(--hijau-400), 
+                var(--hijau-500), 
+                transparent
+            );
+            opacity: 0.5;
         }
 
-        .how-step {
+        .step-card {
             text-align: center;
             position: relative;
             z-index: 1;
         }
 
         .step-number {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 2rem;
-            background: linear-gradient(145deg, var(--forest-500) 0%, var(--forest-600) 100%);
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 1.5rem;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            backdrop-filter: blur(20px);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: 800;
-            font-family: 'Playfair Display', Georgia, serif;
-            color: white;
-            box-shadow: var(--shadow-glow);
+            font-family: 'Playfair Display', serif;
+            color: var(--hijau-400);
+            transition: all 0.4s ease;
             position: relative;
         }
 
@@ -883,17 +567,8 @@ include('conncection.php');
             position: absolute;
             inset: -8px;
             border-radius: 50%;
-            border: 2px dashed var(--forest-300);
-            animation: spinSlow 30s linear infinite;
-        }
-
-        .step-number::after {
-            content: '';
-            position: absolute;
-            inset: -16px;
-            border-radius: 50%;
-            border: 1px dashed var(--forest-200);
-            animation: spinSlow 40s linear infinite reverse;
+            border: 1px dashed rgba(34, 197, 94, 0.3);
+            animation: spinSlow 20s linear infinite;
         }
 
         @keyframes spinSlow {
@@ -901,31 +576,35 @@ include('conncection.php');
             to { transform: rotate(360deg); }
         }
 
-        .how-step h4 {
-            font-size: 1.25rem;
+        .step-card:hover .step-number {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: var(--hijau-500);
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.3);
+        }
+
+        .step-card h4 {
+            font-size: 1.15rem;
             font-weight: 700;
-            color: var(--foreground);
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
         }
 
-        .how-step p {
-            font-size: 0.95rem;
-            color: var(--muted);
-            max-width: 220px;
+        .step-card p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            max-width: 200px;
             margin: 0 auto;
-            line-height: 1.7;
+            line-height: 1.6;
         }
 
-        /* ==================== CTA SECTION ==================== */
-        .cta-section {
-            padding: 8rem 0;
-            background: var(--background);
-        }
-
+        /* ==================== GLASS CTA ==================== */
         .cta-card {
-            background: linear-gradient(145deg, var(--forest-700) 0%, var(--forest-800) 50%, var(--forest-900) 100%);
-            border-radius: var(--radius-2xl);
-            padding: 5rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            padding: 4rem;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -934,12 +613,12 @@ include('conncection.php');
         .cta-card::before {
             content: '';
             position: absolute;
-            top: -60%;
+            top: -50%;
             right: -30%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(251, 191, 36, 0.15) 0%, transparent 70%);
-            animation: ctaPulse 6s ease-in-out infinite;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.15) 0%, transparent 70%);
+            animation: ctaPulse 5s ease-in-out infinite;
         }
 
         .cta-card::after {
@@ -947,15 +626,15 @@ include('conncection.php');
             position: absolute;
             bottom: -40%;
             left: -20%;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(58, 144, 104, 0.2) 0%, transparent 70%);
-            animation: ctaPulse 6s ease-in-out infinite 3s;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, transparent 70%);
+            animation: ctaPulse 5s ease-in-out infinite 2.5s;
         }
 
         @keyframes ctaPulse {
             0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.15); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 0.8; }
         }
 
         .cta-content {
@@ -964,70 +643,55 @@ include('conncection.php');
         }
 
         .cta-title {
-            font-size: clamp(1.75rem, 3.5vw, 2.75rem);
-            color: white;
-            margin-bottom: 1.25rem;
+            font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+            margin-bottom: 1rem;
         }
 
         .cta-description {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1.2rem;
-            max-width: 550px;
-            margin: 0 auto 2.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto 2rem;
             line-height: 1.8;
         }
 
-        .btn-cta {
-            background: white;
-            color: var(--forest-700);
-            padding: 1.25rem 3rem;
-            font-weight: 700;
-            box-shadow: var(--shadow-strong);
-        }
-
-        .btn-cta:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.3);
-        }
-
-        /* ==================== FOOTER ==================== */
+        /* ==================== GLASS FOOTER ==================== */
         footer {
-            background: var(--forest-950);
-            color: white;
-            padding: 5rem 0 2.5rem;
+            background: rgba(0, 15, 8, 0.8);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            padding: 4rem 0 2rem;
         }
 
         .footer-grid {
             display: grid;
-            grid-template-columns: 1.75fr 1fr 1fr;
-            gap: 5rem;
-            margin-bottom: 4rem;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 3rem;
         }
 
         .footer-brand {
             display: flex;
             align-items: center;
-            gap: 14px;
-            font-size: 1.5rem;
+            gap: 12px;
+            font-size: 1.35rem;
             font-weight: 700;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
         }
 
-        .footer-brand i {
-            color: var(--forest-400);
-        }
+        .footer-brand i { color: var(--hijau-400); }
 
         .footer-description {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 1rem;
-            max-width: 320px;
-            line-height: 1.85;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.95rem;
+            max-width: 300px;
+            line-height: 1.8;
         }
 
         .footer-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
-            margin-bottom: 1.75rem;
+            margin-bottom: 1.5rem;
             color: white;
         }
 
@@ -1035,34 +699,32 @@ include('conncection.php');
             list-style: none;
         }
 
-        .footer-links li {
-            margin-bottom: 1rem;
-        }
+        .footer-links li { margin-bottom: 0.75rem; }
 
         .footer-links a {
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.5);
             text-decoration: none;
-            font-size: 1rem;
+            font-size: 0.95rem;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             transition: all 0.3s;
         }
 
         .footer-links a:hover {
-            color: var(--corn-400);
-            transform: translateX(6px);
+            color: var(--hijau-400);
+            transform: translateX(5px);
         }
 
         .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding-top: 2.5rem;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 2rem;
             text-align: center;
         }
 
         .footer-bottom p {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.925rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
         }
 
         .footer-bottom .heart {
@@ -1076,111 +738,25 @@ include('conncection.php');
         }
 
         /* ==================== RESPONSIVE ==================== */
-        @media (max-width: 1200px) {
-            .scroll-float-card {
-                display: none;
-            }
-        }
-
         @media (max-width: 1024px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .stat-item:nth-child(2)::after {
-                display: none;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-                max-width: 500px;
-                margin: 0 auto;
-            }
-
-            .how-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 4rem 2rem;
-            }
-
-            .how-grid::before {
-                display: none;
-            }
-
-            .footer-grid {
-                grid-template-columns: 1fr;
-                text-align: center;
-                gap: 3rem;
-            }
-
-            .footer-description {
-                margin: 0 auto;
-            }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .features-grid { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
+            .steps-grid { grid-template-columns: repeat(2, 1fr); gap: 3rem; }
+            .steps-grid::before { display: none; }
+            .footer-grid { grid-template-columns: 1fr; text-align: center; gap: 2.5rem; }
+            .footer-description { margin: 0 auto; }
         }
 
         @media (max-width: 768px) {
-            .navbar-menu {
-                display: none;
-            }
-
-            .mobile-toggle {
-                display: block;
-            }
-
-            .hero-content {
-                padding: 8rem 0 4rem;
-            }
-
-            .scroll-container {
-                min-height: auto;
-                padding: 4rem 1rem;
-            }
-
-            .scroll-card-image {
-                aspect-ratio: 4 / 3;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            .stat-item::after {
-                display: none !important;
-            }
-
-            .stat-item {
-                padding: 1.5rem;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            }
-
-            .stat-item:last-child {
-                border-bottom: none;
-            }
-
-            .stat-number {
-                font-size: 3rem;
-            }
-
-            .how-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .step-number {
-                width: 100px;
-                height: 100px;
-                font-size: 2.5rem;
-            }
-
-            .cta-card {
-                padding: 3rem 2rem;
-            }
-
-            .btn {
-                width: 100%;
-            }
+            .navbar-menu { display: none; }
+            .mobile-toggle { display: block; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .steps-grid { grid-template-columns: 1fr; }
+            .cta-card { padding: 3rem 2rem; }
+            .btn { width: 100%; }
         }
 
-        /* Mobile menu */
+        /* Mobile Menu */
         .mobile-menu {
             display: none;
             position: fixed;
@@ -1188,55 +764,251 @@ include('conncection.php');
             left: 0;
             right: 0;
             bottom: 0;
-            background: var(--background);
+            background: rgba(0, 15, 8, 0.95);
+            backdrop-filter: blur(20px);
             z-index: 999;
-            padding: 7rem 2rem 2rem;
+            padding: 6rem 2rem 2rem;
         }
 
-        .mobile-menu.active {
-            display: block;
-        }
+        .mobile-menu.active { display: block; }
 
         .mobile-menu-close {
             position: absolute;
-            top: 1.75rem;
-            right: 1.75rem;
-            background: none;
-            border: none;
-            font-size: 1.75rem;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: white;
+            font-size: 1.5rem;
             cursor: pointer;
-            color: var(--foreground);
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
         }
 
         .mobile-menu-links {
             list-style: none;
         }
 
-        .mobile-menu-links li {
-            margin-bottom: 0.5rem;
-        }
+        .mobile-menu-links li { margin-bottom: 0.5rem; }
 
         .mobile-menu-links a {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             padding: 1.25rem;
             text-decoration: none;
-            color: var(--foreground);
-            font-size: 1.2rem;
+            color: white;
+            font-size: 1.1rem;
             font-weight: 500;
             border-radius: var(--radius-lg);
-            transition: background 0.3s;
+            border: 1px solid transparent;
+            transition: all 0.3s;
         }
 
         .mobile-menu-links a:hover {
-            background: var(--forest-100);
-            color: var(--forest-700);
+            background: var(--glass-bg);
+            border-color: var(--glass-border);
+        }
+        /* ==================== SCROLL ZOOM EFFECT ==================== */
+        .hero {
+            transform-origin: center top;
+            will-change: transform, opacity;
+        }
+
+        .hero.zoomed-out {
+            transform: scale(0.9);
+            opacity: 0.8;
+        }
+
+        /* ==================== SCROLL IMAGE SECTIONS ==================== */
+        .scroll-section {
+            padding: 6rem 0;
+            position: relative;
+        }
+
+        .scroll-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .scroll-text {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .scroll-text h2 {
+            font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+        }
+
+        .scroll-text h3 {
+            font-size: clamp(2rem, 4.5vw, 3.5rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .scroll-text h3 .highlight {
+            background: linear-gradient(135deg, var(--hijau-400), var(--hijau-300));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Card dengan efek 3D */
+        .scroll-card {
+            position: relative;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            will-change: transform;
+            transition: transform 0.1s linear;
+        }
+
+        .scroll-card-frame {
+            background: linear-gradient(145deg, rgba(30, 30, 30, 0.9), rgba(15, 15, 15, 0.95));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 0.5rem;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .scroll-card-inner {
+            border-radius: calc(var(--radius-xl) - 0.35rem);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .scroll-card-inner img {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+
+        .scroll-card:hover .scroll-card-inner img {
+            transform: scale(1.30);
+        }
+
+        /* Floating info cards */
+        .floating-info {
+            position: absolute;
+            background: var(--glass-bg-strong);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 10;
+        }
+
+        .floating-info.visible {
+            opacity: 1;
+        }
+
+        .floating-info.left {
+            left: -20px;
+            top: 25%;
+            transform: translateX(-30px);
+        }
+
+        .floating-info.right {
+            right: -20px;
+            bottom: 25%;
+            transform: translateX(30px);
+        }
+
+        .floating-info.visible.left {
+            transform: translateX(0);
+        }
+
+        .floating-info.visible.right {
+            transform: translateX(0);
+        }
+
+        .floating-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .floating-icon.hijau {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--hijau-400);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .floating-icon.kuning {
+            background: rgba(250, 204, 21, 0.2);
+            color: var(--kuning-400);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+        }
+
+        .floating-text h6 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .floating-text p {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Scroll card animation states */
+        .scroll-card {
+            transform: perspective(1000px) rotateX(12deg) scale(0.92);
+            opacity: 0.7;
+        }
+
+        .scroll-card.in-view {
+            transform: perspective(1000px) rotateX(0deg) scale(1);
+            opacity: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .floating-info {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .scroll-card-inner img {
+                aspect-ratio: 4 / 3;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- ==================== NAVBAR ==================== -->
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source src="images/viedo.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="video-overlay"></div>
+
+    <!-- Partikel Hijau -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="container">
             <div class="navbar-inner">
@@ -1252,7 +1024,7 @@ include('conncection.php');
                     <li><a href="./tentang/tentang.php" class="navbar-link"><i class="fas fa-info-circle"></i> Tentang</a></li>
                     <li><a href="./diagnosis/input_gejala.php" class="navbar-link navbar-cta"><i class="fas fa-stethoscope"></i> Mulai Diagnosa</a></li>
                 </ul>
-                <button class="mobile-toggle" onclick="openMobileMenu()">
+                <button class="mobile-toggle" onclick="bukaMobileMenu()">
                     <i class="fas fa-bars"></i>
                 </button>
             </div>
@@ -1261,26 +1033,21 @@ include('conncection.php');
 
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
-        <button class="mobile-menu-close" onclick="closeMobileMenu()">
+        <button class="mobile-menu-close" onclick="tutupMobileMenu()">
             <i class="fas fa-times"></i>
         </button>
         <ul class="mobile-menu-links">
-            <li><a href="#" onclick="closeMobileMenu()"><i class="fas fa-home"></i> Beranda</a></li>
+            <li><a href="#" onclick="tutupMobileMenu()"><i class="fas fa-home"></i> Beranda</a></li>
             <li><a href="./info-penyakit/infopenyakit.php"><i class="fas fa-book-medical"></i> Info Penyakit</a></li>
             <li><a href="./tentang/tentang.php"><i class="fas fa-info-circle"></i> Tentang</a></li>
             <li><a href="./diagnosis/input_gejala.php"><i class="fas fa-stethoscope"></i> Mulai Diagnosa</a></li>
         </ul>
     </div>
 
-    <!-- ==================== HERO SECTION ==================== -->
+    <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-pattern"></div>
-        <div class="floating-shape floating-shape-1"></div>
-        <div class="floating-shape floating-shape-2"></div>
-        <div class="floating-shape floating-shape-3"></div>
-        
-        <div class="container hero-content">
-            <div class="hero-text-center">
+        <div class="container">
+            <div class="hero-content">
                 <div class="hero-badge">
                     <i class="fas fa-leaf"></i>
                     Sistem Pakar Berbasis Certainty Factor
@@ -1296,121 +1063,99 @@ include('conncection.php');
                     <a href="./diagnosis/input_gejala.php" class="btn btn-primary">
                         <i class="fas fa-stethoscope"></i> Mulai Diagnosa
                     </a>
-                    <a href="./info-penyakit/infopenyakit.php" class="btn btn-secondary">
+                    <a href="./info-penyakit/infopenyakit.php" class="btn btn-glass">
                         <i class="fas fa-book-open"></i> Pelajari Lebih
                     </a>
                 </div>
             </div>
         </div>
     </section>
-
-    <!-- ==================== SCROLL SECTION 1 ==================== -->
-    <section class="scroll-section">
-        <div class="scroll-container light-bg" data-scroll-container>
-            <div class="scroll-title-wrapper">
-                <h2 class="scroll-title">Teknologi Cerdas untuk Pertanian</h2>
-                <span class="scroll-title-large font-serif">
-                    Identifikasi Penyakit dalam Hitungan Detik
-                </span>
-            </div>
-            <div class="scroll-card-wrapper">
-                <div class="scroll-card">
-                    <div class="scroll-card-inner">
-                        <img 
-                            src="../analisa-penyakit-jagung/images/cewek-jagung.png" 
-                            alt="Tanaman Jagung Sehat"
-                            class="scroll-card-image"
-                            draggable="false"
-                        >
-                    </div>
+    <!-- Scroll Image Section 1 -->
+<section class="scroll-section">
+    <div class="scroll-container">
+        <div class="scroll-text">
+            <h2>Teknologi Cerdas untuk Pertanian</h2>
+            <h3 class="font-serif">Identifikasi Penyakit dalam <span class="highlight">Hitungan Detik</span></h3>
+        </div>
+        <div class="scroll-card" data-scroll-card>
+            <div class="scroll-card-frame">
+                <div class="scroll-card-inner">
+                    <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=1400&h=788&auto=format&fit=crop" alt="Petani dengan Tanaman Jagung" draggable="false">
                 </div>
             </div>
-            <div class="scroll-float-card scroll-float-card-1">
-                <div class="float-icon green">
+            <div class="floating-info left">
+                <div class="floating-icon hijau">
                     <i class="fas fa-check-circle"></i>
                 </div>
-                <div class="float-text">
+                <div class="floating-text">
                     <h6>Akurasi 95%</h6>
                     <p>Tingkat keberhasilan tinggi</p>
                 </div>
             </div>
-            <div class="scroll-float-card scroll-float-card-2">
-                <div class="float-icon gold">
+            <div class="floating-info right">
+                <div class="floating-icon kuning">
                     <i class="fas fa-bolt"></i>
                 </div>
-                <div class="float-text">
+                <div class="floating-text">
                     <h6>Hasil Instan</h6>
-                    <p>Diagnosa dalam hitungan detik</p>
+                    <p>Diagnosa dalam detik</p>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- ==================== SCROLL SECTION 2 ==================== -->
-    <section class="scroll-section">
-        <div class="scroll-container dark-bg" data-scroll-container>
-            <div class="scroll-title-wrapper">
-                <h2 class="scroll-title">Database Penyakit Lengkap</h2>
-                <span class="scroll-title-large font-serif">
-                    6+ Jenis Penyakit & 18+ Gejala Teridentifikasi
-                </span>
-            </div>
-            <div class="scroll-card-wrapper">
-                <div class="scroll-card">
-                    <div class="scroll-card-inner">
-                        <img 
-                            src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=1400&h=788&auto=format&fit=crop" 
-                            alt="Analisis Penyakit Tanaman"
-                            class="scroll-card-image"
-                            draggable="false"
-                        >
-                    </div>
+<!-- Scroll Image Section 2 -->
+<section class="scroll-section">
+    <div class="scroll-container">
+        <div class="scroll-text">
+            <h2>Database Penyakit Lengkap</h2>
+            <h3 class="font-serif"><span class="highlight">6+ Penyakit</span> & 18+ Gejala Teridentifikasi</h3>
+        </div>
+        <div class="scroll-card" data-scroll-card>
+            <div class="scroll-card-frame">
+                <div class="scroll-card-inner">
+                    <img src="images/pexels-lina-13054496.jpg" alt="Ladang Jagung" draggable="false">
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- ==================== SCROLL SECTION 3 ==================== -->
-    <section class="scroll-section">
-        <div class="scroll-container light-bg" data-scroll-container>
-            <div class="scroll-title-wrapper">
-                <h2 class="scroll-title">Solusi & Rekomendasi</h2>
-                <span class="scroll-title-large font-serif">
-                    Panduan Penanganan yang Tepat & Efektif
-                </span>
-            </div>
-            <div class="scroll-card-wrapper">
-                <div class="scroll-card">
-                    <div class="scroll-card-inner">
-                        <img 
-                            src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?q=80&w=1400&h=788&auto=format&fit=crop" 
-                            alt="Petani Merawat Tanaman"
-                            class="scroll-card-image"
-                            draggable="false"
-                        >
-                    </div>
+<!-- Scroll Image Section 3 -->
+<section class="scroll-section">
+    <div class="scroll-container">
+        <div class="scroll-text">
+            <h2>Solusi & Rekomendasi</h2>
+            <h3 class="font-serif">Panduan Penanganan yang <span class="highlight">Tepat & Efektif</span></h3>
+        </div>
+        <div class="scroll-card" data-scroll-card>
+            <div class="scroll-card-frame">
+                <div class="scroll-card-inner">
+                    <img src="images/cewek-jagung.png" alt="Hasil Panen Jagung" draggable="false">
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- ==================== STATS SECTION ==================== -->
-    <section class="stats-section">
+    <!-- Stats Section -->
+    <section class="section">
         <div class="container">
             <div class="stats-grid">
-                <div class="stat-item">
+                <div class="stat-card">
                     <div class="stat-number">6+</div>
                     <div class="stat-label">Jenis Penyakit</div>
                 </div>
-                <div class="stat-item">
+                <div class="stat-card">
                     <div class="stat-number">18+</div>
                     <div class="stat-label">Gejala Teridentifikasi</div>
                 </div>
-                <div class="stat-item">
+                <div class="stat-card">
                     <div class="stat-number">95%</div>
                     <div class="stat-label">Tingkat Akurasi</div>
                 </div>
-                <div class="stat-item">
+                <div class="stat-card">
                     <div class="stat-number">40+</div>
                     <div class="stat-label">Konsultasi</div>
                 </div>
@@ -1418,8 +1163,8 @@ include('conncection.php');
         </div>
     </section>
 
-    <!-- ==================== FEATURES SECTION ==================== -->
-    <section class="features-section">
+    <!-- Features Section -->
+    <section class="section">
         <div class="container">
             <div class="section-header">
                 <div class="section-badge">
@@ -1433,21 +1178,21 @@ include('conncection.php');
 
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon style-1">
+                    <div class="feature-icon hijau">
                         <i class="fas fa-bolt"></i>
                     </div>
                     <h4>Cepat & Akurat</h4>
                     <p>Diagnosa penyakit jagung secara cepat dengan tingkat akurasi tinggi menggunakan metode Certainty Factor yang telah teruji.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon style-2">
+                    <div class="feature-icon kuning">
                         <i class="fas fa-book"></i>
                     </div>
                     <h4>Informasi Lengkap</h4>
                     <p>Dapatkan informasi detail tentang berbagai jenis penyakit jagung beserta solusi penanganan dan pencegahannya.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon style-3">
+                    <div class="feature-icon biru">
                         <i class="fas fa-mobile-alt"></i>
                     </div>
                     <h4>Mudah Diakses</h4>
@@ -1457,8 +1202,8 @@ include('conncection.php');
         </div>
     </section>
 
-    <!-- ==================== HOW IT WORKS ==================== -->
-    <section class="how-section">
+    <!-- How It Works Section -->
+    <section class="section">
         <div class="container">
             <div class="section-header">
                 <div class="section-badge">
@@ -1470,23 +1215,23 @@ include('conncection.php');
                 </p>
             </div>
 
-            <div class="how-grid">
-                <div class="how-step">
+            <div class="steps-grid">
+                <div class="step-card">
                     <div class="step-number">1</div>
                     <h4>Pilih Gejala</h4>
                     <p>Identifikasi dan pilih gejala yang terlihat pada tanaman jagung Anda</p>
                 </div>
-                <div class="how-step">
+                <div class="step-card">
                     <div class="step-number">2</div>
                     <h4>Analisis Sistem</h4>
                     <p>Sistem akan menganalisis gejala menggunakan metode Certainty Factor</p>
                 </div>
-                <div class="how-step">
+                <div class="step-card">
                     <div class="step-number">3</div>
                     <h4>Hasil Diagnosa</h4>
                     <p>Dapatkan hasil diagnosa penyakit beserta tingkat kepastiannya</p>
                 </div>
-                <div class="how-step">
+                <div class="step-card">
                     <div class="step-number">4</div>
                     <h4>Solusi & Penanganan</h4>
                     <p>Terima rekomendasi penanganan dan pencegahan yang tepat</p>
@@ -1495,8 +1240,8 @@ include('conncection.php');
         </div>
     </section>
 
-    <!-- ==================== CTA SECTION ==================== -->
-    <section class="cta-section">
+    <!-- CTA Section -->
+    <section class="section">
         <div class="container">
             <div class="cta-card">
                 <div class="cta-content">
@@ -1504,7 +1249,7 @@ include('conncection.php');
                     <p class="cta-description">
                         Mulai diagnosa sekarang dan dapatkan rekomendasi penanganan yang tepat untuk tanaman Anda.
                     </p>
-                    <a href="./diagnosis/input_gejala.php" class="btn btn-cta">
+                    <a href="./diagnosis/input_gejala.php" class="btn btn-primary">
                         <i class="fas fa-arrow-right"></i> Diagnosa Sekarang
                     </a>
                 </div>
@@ -1512,7 +1257,7 @@ include('conncection.php');
         </div>
     </section>
 
-    <!-- ==================== FOOTER ==================== -->
+    <!-- Footer -->
     <footer>
         <div class="container">
             <div class="footer-grid">
@@ -1559,94 +1304,148 @@ include('conncection.php');
             }
         });
 
-        // Container Scroll Animation - Similar to React ContainerScroll
-        const scrollContainers = document.querySelectorAll('[data-scroll-container]');
-        
-        function updateScrollAnimation() {
-            scrollContainers.forEach(container => {
-                const rect = container.getBoundingClientRect();
-                const viewportHeight = window.innerHeight;
-                const containerCenter = rect.top + rect.height / 2;
-                const viewportCenter = viewportHeight / 2;
-                
-                // Calculate progress: 0 when entering from bottom, 1 when centered, back to lower when exiting top
-                const distanceFromCenter = containerCenter - viewportCenter;
-                const maxDistance = viewportHeight;
-                
-                // Normalize: 1 = centered, 0 = far away
-                let progress = 1 - Math.abs(distanceFromCenter) / maxDistance;
-                progress = Math.max(0, Math.min(1, progress));
-                
-                // Check if container is in viewport
-                const isInView = rect.top < viewportHeight && rect.bottom > 0;
-                
-                if (isInView) {
-                    container.classList.add('in-view');
-                    
-                    const cardWrapper = container.querySelector('.scroll-card-wrapper');
-                    const titleWrapper = container.querySelector('.scroll-title-wrapper');
-                    
-                    if (cardWrapper) {
-                        // rotateX: 15deg when progress=0, 0deg when progress=1
-                        const rotateX = 15 * (1 - progress);
-                        // scale: 0.9 when progress=0, 1 when progress=1
-                        const scale = 0.9 + (0.1 * progress);
-                        // translateY: moves up as you scroll
-                        const translateY = 50 * (1 - progress);
-                        
-                        cardWrapper.style.transform = `perspective(1000px) rotateX(${rotateX}deg) scale(${scale}) translateY(${translateY}px)`;
-                    }
-                    
-                    if (titleWrapper) {
-                        // Title moves up and fades as card comes into full view
-                        const titleTranslateY = -30 * progress;
-                        titleWrapper.style.transform = `translateY(${titleTranslateY}px)`;
-                    }
-                } else {
-                    container.classList.remove('in-view');
-                }
-            });
+        // Buat partikel hijau
+        function buatPartikel() {
+            const container = document.getElementById('particles');
+            const jumlahPartikel = 100;
+
+            for (let i = 0; i < jumlahPartikel; i++) {
+                const partikel = document.createElement('div');
+                partikel.className = 'particle';
+                partikel.style.left = Math.random() * 100 + '%';
+                partikel.style.animationDuration = (1 + Math.random() * 20) + 's';
+                partikel.style.animationDelay = Math.random() * 20 + 's';
+                partikel.style.width = (2 + Math.random() * 4) + 'px';
+                partikel.style.height = partikel.style.width;
+                container.appendChild(partikel);
+            }
         }
 
-        // Initial call
-        updateScrollAnimation();
-        
-        // Throttled scroll listener for smooth animation
-        let ticking = false;
-        window.addEventListener('scroll', () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    updateScrollAnimation();
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        }, { passive: true });
+        buatPartikel();
 
-        // Mobile menu functions
-        function openMobileMenu() {
+        // Mobile menu
+        function bukaMobileMenu() {
             document.getElementById('mobileMenu').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
-        function closeMobileMenu() {
+        function tutupMobileMenu() {
             document.getElementById('mobileMenu').classList.remove('active');
             document.body.style.overflow = '';
         }
 
-        // Smooth scroll for anchor links
+        // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
         });
+
+        // Animasi saat scroll
+        const observerAnimasi = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.stat-card, .feature-card, .step-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease';
+            observerAnimasi.observe(el);
+        });
+        // ==================== HERO ZOOM OUT EFFECT ====================
+        const heroSection = document.querySelector('.hero');
+
+        function updateHeroZoom() {
+            const scrollY = window.scrollY;
+            const windowHeight = window.innerHeight;
+            
+            // Hitung progress scroll (0 sampai 1)
+            const scrollProgress = Math.min(scrollY / (windowHeight * 0.5), 1);
+            
+            // Scale: 1 -> 0.85, Opacity: 1 -> 0.6
+            const scale = 1.15 - (scrollProgress * 0.35);
+            const opacity = 1 - (scrollProgress * 0.5);
+            const translateY = scrollProgress * -50;
+            
+            heroSection.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+            heroSection.style.opacity = opacity;
+        }
+
+        // ==================== SCROLL CARD 3D EFFECT ====================
+        const scrollCards = document.querySelectorAll('[data-scroll-card]');
+
+        function updateScrollCards() {
+            scrollCards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+                const cardCenter = rect.top + rect.height / 2;
+                const viewportCenter = windowHeight / 2;
+                
+                // Hitung jarak dari tengah viewport
+                const distanceFromCenter = cardCenter - viewportCenter;
+                const maxDistance = windowHeight * 200;
+                
+                // Normalize progress: 1 = di tengah, 0 = jauh
+                let progress = 1 - Math.abs(distanceFromCenter) / maxDistance;
+                progress = Math.max(0, Math.min(1, progress));
+                
+                // Cek apakah card terlihat
+                const isInView = rect.top < windowHeight && rect.bottom > 0;
+                
+                if (isInView) {
+                    // rotateX: 12deg -> 0deg
+                    const rotateX = 50 * (1 - progress);
+                    // scale: 0.92 -> 1
+                    const scale = 0.92 + (0.08 * progress);
+                    // opacity: 0.7 -> 1
+                    const opacity = 0.7 + (0.3 * progress);
+                    // translateY: bergerak sedikit
+                    const translateY = 2 * (1 - progress);
+                    
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) scale(${scale}) translateY(${translateY}px)`;
+                    card.style.opacity = opacity;
+                    
+                    // Tampilkan floating info cards
+                    const floatingInfos = card.querySelectorAll('.floating-info');
+                    floatingInfos.forEach(info => {
+                        if (progress > 0.5) {
+                            info.classList.add('visible');
+                        } else {
+                            info.classList.remove('visible');
+                        }
+                    });
+                }
+            });
+        }
+
+        // ==================== SCROLL EVENT LISTENER ====================
+        let ticking = false;
+
+        function onScroll() {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    updateHeroZoom();
+                    updateScrollCards();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+
+        // Initial call
+        updateHeroZoom();
+        updateScrollCards();
     </script>
 </body>
 </html>

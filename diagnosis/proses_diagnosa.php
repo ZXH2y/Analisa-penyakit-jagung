@@ -38,7 +38,6 @@ foreach ($diagnosa as $penyakit => $cf_values) {
     $cf_combine = 0;
     $cf_process = [];
     
-    // Hitung jumlah gejala yang dipilih user
     $matched_count = 0;
     $total_rules = count($cf_values);
     
@@ -48,13 +47,9 @@ foreach ($diagnosa as $penyakit => $cf_values) {
         }
         $cf_new = $cf_data['cf'];
         $cf_combine = $cf_combine + ($cf_new * (1 - $cf_combine));
-        $cf_process[] = "CF Baru = {$cf_combine} + ({$cf_new} * (1 - {$cf_combine}))";
     }
     
-    // Hitung coverage (proporsi gejala terpenuhi)
     $coverage = $total_rules > 0 ? $matched_count / $total_rules : 0;
-    
-    // CF akhir = CF combine × coverage
     $cf_final = $cf_combine * $coverage;
     
     $hasil_diagnosa[$penyakit] = [
@@ -69,11 +64,9 @@ foreach ($diagnosa as $penyakit => $cf_values) {
 }
 
 uasort($hasil_diagnosa, function($a, $b) {
-    // Prioritas 1: CF akhir tertinggi
     if (abs($b['cf'] - $a['cf']) > 0.0001) {
         return ($b['cf'] > $a['cf']) ? 1 : -1;
     }
-    // Prioritas 2: Coverage tertinggi
     return ($b['coverage'] > $a['coverage']) ? 1 : -1;
 });
 
@@ -103,7 +96,6 @@ foreach ($hasil_diagnosa as $penyakit_id => $data) {
     }
 }
 
-// Get current date
 $tanggal_diagnosa = date('d F Y, H:i');
 ?>
 
@@ -1286,7 +1278,7 @@ $tanggal_diagnosa = date('d F Y, H:i');
                         </div>
                         <div>
                             <h3 class="section-title">Proses Perhitungan CF</h3>
-                            <p class="section-subtitle">Detail perhitungan Certainty Factor</p>
+                            <p class="section-subtitle">Detail perhitungan Certainty Factor untuk semua gejala</p>
                         </div>
                     </div>
                     <div class="section-toggle">
@@ -1296,58 +1288,149 @@ $tanggal_diagnosa = date('d F Y, H:i');
                 <div class="section-body collapsed">
                     <div class="calc-steps">
                         <?php
-                        $cf_combine = 0;
+                        $cf_combine_all = 0; // CF untuk semua gejala (fleksibel)
+                        $cf_combine_rule = 0; // CF untuk gejala dalam rule saja (akurat)
                         $counter = 0;
-                        foreach ($penyakit_tertinggi['gejala'] as $id_gejala => $data) {
-                            if ($data['nilai_user'] > 0) {
+                        $counter_rule = 0;
+                        
+                        // Loop semua gejala yang diinput user
+                        foreach ($gejala_user as $id_gejala => $nilai_user) {
+                            if ($nilai_user > 0) {
                                 $counter++;
-                                $cf_old = $cf_combine;
-                                $cf_new = $data['cf'];
-                                $cf_combine = $cf_combine + ($cf_new * (1 - $cf_combine));
                                 
-                                $query_nama_gejala = "SELECT nama_gejala FROM gejala WHERE id_gejala='$id_gejala'";
+                                // Ambil data gejala
+                                $query_nama_gejala = "SELECT nama_gejala, nilai_pakar FROM gejala WHERE id_gejala='$id_gejala'";
                                 $result_nama_gejala = mysqli_query($connection, $query_nama_gejala);
-                                $nama_gejala = mysqli_fetch_assoc($result_nama_gejala)['nama_gejala'] ?? 'Gejala Tidak Ditemukan';
+                                $data_gejala = mysqli_fetch_assoc($result_nama_gejala);
+                                
+                                if ($data_gejala) {
+                                    $nama_gejala = $data_gejala['nama_gejala'];
+                                    $nilai_pakar = $data_gejala['nilai_pakar'];
+                                    
+                                    // Hitung CF untuk gejala ini
+                                    $cf_gejala = $nilai_user * $nilai_pakar;
+                                    
+                                    // Cek apakah gejala ini ada di penyakit tertinggi
+                                    $ada_di_rule = isset($penyakit_tertinggi['gejala'][$id_gejala]);
+                                    
+                                    if ($ada_di_rule) {
+                                        $counter_rule++;
+                                        $data = $penyakit_tertinggi['gejala'][$id_gejala];
+                                        $cf_old_rule = $cf_combine_rule;
+                                        $cf_new_rule = $data['cf'];
+                                        $cf_combine_rule = $cf_combine_rule + ($cf_new_rule * (1 - $cf_combine_rule));
+                                    }
+                                    
+                                    // Perhitungan fleksibel untuk semua gejala
+                                    $cf_old_all = $cf_combine_all;
+                                    $cf_combine_all = $cf_combine_all + ($cf_gejala * (1 - $cf_combine_all));
                         ?>
-                            <div class="calc-step" style="animation-delay: <?php echo $counter * 0.15; ?>s">
+                            <div class="calc-step" style="animation-delay: <?php echo $counter * 0.15; ?>s; <?php echo !$ada_di_rule ? 'opacity: 0.7;' : ''; ?>">
                                 <div class="calc-step-header">
-                                    <span class="calc-step-number"><?php echo $counter; ?></span>
-                                    <span class="calc-step-title"><?php echo htmlspecialchars($nama_gejala); ?></span>
+                                    <span class="calc-step-number" style="<?php echo !$ada_di_rule ? 'background: var(--gray-400);' : ''; ?>"><?php echo $counter; ?></span>
+                                    <span class="calc-step-title">
+                                        <?php echo htmlspecialchars($nama_gejala); ?>
+                                        <?php if (!$ada_di_rule) { ?>
+                                            <span style="font-size: 0.75rem; color: var(--gray-500); font-weight: 400;">
+                                                (Tidak termasuk rule <?php echo htmlspecialchars($penyakit_tertinggi['id_penyakit']); ?> - <?php echo htmlspecialchars($penyakit_tertinggi['nama_penyakit']); ?>)
+                                            </span>
+                                        <?php } else { ?>
+                                            <span style="font-size: 0.75rem; color: var(--primary); font-weight: 600;">
+                                                ✓ Termasuk rule
+                                            </span>
+                                        <?php } ?>
+                                    </span>
                                 </div>
-                                <div class="calc-formula">
+                                
+                                <div class="calc-formula" style="<?php echo !$ada_di_rule ? 'background: var(--gray-100); border-left: 3px solid var(--gray-400);' : ''; ?>">
+                                    <div style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(59, 130, 246, 0.1); border-radius: 8px;">
+                                        <strong>Data Gejala:</strong><br>
+                                        • Nilai User: <?php echo $nilai_user; ?><br>
+                                        • Nilai Pakar: <?php echo $nilai_pakar; ?><br>
+                                        • CF Gejala = <?php echo $nilai_user; ?> × <?php echo $nilai_pakar; ?> = <strong><?php echo number_format($cf_gejala, 4); ?></strong>
+                                    </div>
+                                    
                                     <strong>CF<sub>combine</sub> = CF<sub>old</sub> + CF<sub>gejala</sub> × (1 - CF<sub>old</sub>)</strong><br><br>
-                                    <strong>CF<sub>combine <?php echo $counter; ?></sub> = CF<sub>old <?php echo $counter - 1; ?></sub> + CF<sub>gejala <?php echo $counter; ?></sub> × (1 - CF<sub>old <?php echo $counter - 1; ?></sub>)</strong><br>
-                                    = <?php echo number_format($cf_old, 4); ?> + <?php echo number_format($cf_new, 4); ?> × (1 - <?php echo number_format($cf_old, 4); ?>)<br>
-                                    = <?php echo number_format($cf_old, 4); ?> + <?php echo number_format($cf_new, 4); ?> × <?php echo number_format(1 - $cf_old, 4); ?><br>
-                                    = <?php echo number_format($cf_old, 4); ?> + <?php echo number_format($cf_new * (1 - $cf_old), 4); ?><br><br>
-                                    <strong style="color: var(--primary);">CF<sub>old <?php echo $counter; ?></sub> = <?php echo number_format($cf_combine, 4); ?></strong>
-                                </div>
-                                        <div class="calc-result">
-                                            <i class="fas fa-arrow-right me-2"></i>Hasil: <?php echo number_format($cf_combine, 4); ?> (<?php echo number_format($cf_combine * 100, 2); ?>%)
+                                    
+                                    <?php if ($ada_di_rule) { ?>
+                                        <div style="padding: 0.75rem; background: rgba(22, 163, 74, 0.1); border-radius: 8px; margin-bottom: 0.5rem;">
+                                            <strong style="color: var(--primary);"> Perhitungan Berdasarkan rule:</strong><br>
+                                            <strong>CF<sub>combine <?php echo $counter_rule; ?></sub> = CF<sub>old <?php echo $counter_rule - 1; ?></sub> + CF<sub>gejala <?php echo $counter_rule; ?></sub> × (1 - CF<sub>old <?php echo $counter_rule - 1; ?></sub>)</strong><br>
+                                            = <?php echo number_format($cf_old_rule, 4); ?> + <?php echo number_format($cf_new_rule, 4); ?> × (1 - <?php echo number_format($cf_old_rule, 4); ?>)<br>
+                                            = <?php echo number_format($cf_old_rule, 4); ?> + <?php echo number_format($cf_new_rule, 4); ?> × <?php echo number_format(1 - $cf_old_rule, 4); ?><br>
+                                            = <?php echo number_format($cf_old_rule, 4); ?> + <?php echo number_format($cf_new_rule * (1 - $cf_old_rule), 4); ?><br>
+                                            <strong style="color: var(--primary);">CF<sub>rule <?php echo $counter_rule; ?></sub> = <?php echo number_format($cf_combine_rule, 4); ?></strong> (<?php echo number_format($cf_combine_rule * 100, 2); ?>%)
                                         </div>
+                                    <?php } ?>
+                                    
+                                    <div style="padding: 0.75rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px;">
+                                        <strong style="color: var(--secondary);"> Perhitungan Fleksibel (tidak mengikuti rule):</strong><br>
+                                        <strong>CF<sub>combine <?php echo $counter; ?></sub> = CF<sub>old <?php echo $counter - 1; ?></sub> + CF<sub>gejala <?php echo $counter; ?></sub> × (1 - CF<sub>old <?php echo $counter - 1; ?></sub>)</strong><br>
+                                        = <?php echo number_format($cf_old_all, 4); ?> + <?php echo number_format($cf_gejala, 4); ?> × (1 - <?php echo number_format($cf_old_all, 4); ?>)<br>
+                                        = <?php echo number_format($cf_old_all, 4); ?> + <?php echo number_format($cf_gejala, 4); ?> × <?php echo number_format(1 - $cf_old_all, 4); ?><br>
+                                        = <?php echo number_format($cf_old_all, 4); ?> + <?php echo number_format($cf_gejala * (1 - $cf_old_all), 4); ?><br>
+                                        <strong style="color: var(--secondary);">CF<sub>tanpa mengikuti rule <?php echo $counter; ?></sub> = <?php echo number_format($cf_combine_all, 4); ?></strong> (<?php echo number_format($cf_combine_all * 100, 2); ?>%)
+                                    </div>
+                                </div>
+                                
+                                <div class="calc-result" style="<?php echo !$ada_di_rule ? 'background: rgba(100, 116, 139, 0.1); color: var(--gray-600);' : ''; ?>">
+                                    <i class="fas fa-arrow-right me-2"></i>
+                                    <?php if ($ada_di_rule) { ?>
+                                        <strong>Rule CF:</strong> <?php echo number_format($cf_combine_rule, 4); ?> (<?php echo number_format($cf_combine_rule * 100, 2); ?>%) | 
+                                    <?php } ?>
+                                    <strong>CF tanpa ngitutin rule</strong> <?php echo number_format($cf_combine_all, 4); ?> (<?php echo number_format($cf_combine_all * 100, 2); ?>%)
+                                </div>
                             </div>
                         <?php
+                                }
                             }
                         }
                         ?>
                     </div>
 
                     <?php
+                    // Perhitungan akhir
                     $matched = 0;
                     $total = count($penyakit_tertinggi['gejala']);
                     foreach ($penyakit_tertinggi['gejala'] as $g) {
                         if ($g['nilai_user'] > 0) $matched++;
                     }
                     $coverage = $total > 0 ? $matched / $total : 0;
-                    $cf_akhir = $cf_combine * $coverage;
+                    $cf_akhir_rule = $cf_combine_rule * $coverage; // Hasil akurat sesuai rule
+                    $cf_akhir_all = $cf_combine_all; // Hasil fleksibel semua gejala
                     ?>
-                    <div class="final-result">
-                        <h4>Hasil Akhir CF</h4>
-                        <div class="value"><?php echo number_format($cf_akhir * 100, 5); ?>%</div>
-                        <small style="opacity: 0.8; display: block; margin-top: 0.5rem;">
-                            CF Combine: <?php echo number_format($cf_combine * 100, 2); ?>% × 
-                            Coverage: <?php echo $matched; ?>/<?php echo $total; ?> (<?php echo number_format($coverage * 100, 0); ?>%)
-                        </small>
+                    
+                    <!-- Hasil Akhir -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                        <!-- Hasil Rule (Akurat) -->
+                        <div class="final-result">
+                            <h4><i class="fas fa-check-circle"></i> Hasil Rule (Akurat)</h4>
+                            <div class="value"><?php echo number_format($cf_akhir_rule * 100, 5); ?>%</div>
+                            <small style="opacity: 0.8; display: block; margin-top: 0.5rem;">
+                                CF Combine: <?php echo number_format($cf_combine_rule * 100, 2); ?>% ×<br>
+                                Coverage: <?php echo $matched; ?>/<?php echo $total; ?> (<?php echo number_format($coverage * 100, 0); ?>%)
+                            </small>
+                        </div>
+                        
+                        <!-- Hasil Fleksibel (Semua Gejala) -->
+                        <div class="final-result" style="background: linear-gradient(135deg, var(--secondary), #d97706);">
+                            <h4><i class="fas fa-chart-line"></i> Hasil Fleksibel (Semua Gejala)</h4>
+                            <div class="value"><?php echo number_format($cf_akhir_all * 100, 2); ?>%</div>
+                            <small style="opacity: 0.8; display: block; margin-top: 0.5rem;">
+                                Berdasarkan <?php echo $counter; ?> gejala yang dipilih<br>
+                                (Termasuk gejala di luar rule)
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Penjelasan -->
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: var(--gray-100); border-radius: 12px; font-size: 0.9rem; color: var(--gray-600);">
+                        <strong> Catatan:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem;">
+                            <li><strong>Hasil Rule (Akurat):</strong> Menggunakan hanya gejala yang terdaftar dalam rule penyakit <em><?php echo htmlspecialchars($penyakit_tertinggi['id_penyakit']); ?> - <?php echo htmlspecialchars($penyakit_tertinggi['nama_penyakit']); ?></em> dengan coverage penalty</li>
+                            <li><strong>Hasil Fleksibel:</strong> Menggunakan semua gejala yang Anda pilih, termasuk yang tidak terdaftar dalam rule</li>
+                            <li>Sistem menampilkan <strong>Hasil Rule</strong> sebagai diagnosa utama untuk akurasi maksimal</li>
+                        </ul>
                     </div>
                 </div>
             </div>
